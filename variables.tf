@@ -9,3 +9,7 @@ variable "region" {
 variable "zone" {
   default = "us-central1-a"
 }
+variable "environment" {
+  type    = string
+  default = "dev"
+}

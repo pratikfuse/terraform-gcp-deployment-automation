@@ -9,5 +9,37 @@ terraform {
 }
 
 provider "google" {
+  project = var.project
+  region  = var.region
+}
 
+# Networking Module
+module "networking" {
+  source = "./modules/networking"
+  
+  project = var.project
+  region  = var.region
+}
+
+# IAM Module
+module "iam" {
+  source = "./modules/iam"
+  
+  project = var.project
+}
+
+# Storage Module
+module "storage" {
+  source = "./modules/storage"
+  project             = var.project
+  region              = var.region
+  environment         = var.environment
+}
+
+# Compute Module
+module "compute" {
+  source = "./modules/compute"
+  project = var.project
+  region  = var.region
+  zone = var.zone
 }
