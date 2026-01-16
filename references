@@ -2,3 +2,9 @@ https://www.youtube.com/watch?v=VCayKl82Lt8 Learn Terraform with Google Cloud Pl
 
 
 https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/cloudfunctions_function Google Cloud Function Documentation Hashicorp
+
+
+https://docs.cloud.google.com/infrastructure-manager/docs/deploy-vpc-with-terraform VPC deployment on terraform
+
+
+https://www.youtube.com/watch?v=-Ah7u9TUYYc learn vpc serverless deployment 

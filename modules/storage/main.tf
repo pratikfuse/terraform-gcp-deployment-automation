@@ -3,6 +3,16 @@ resource "google_firestore_database" "default" {
   name        = "(default)"
   location_id = var.firestore_location
   type        = "FIRESTORE_NATIVE"
+  deletion_policy = "ABANDON"
+
+  lifecycle {
+    prevent_destroy = true
+    ignore_changes = [ 
+        name,
+        location_id,
+        type
+     ]
+  }
 }
 
 # Cloud Storage bucket for static website content
@@ -10,7 +20,7 @@ resource "google_storage_bucket" "static_content" {
   name          = "${var.project}-static-content-${var.environment}"
   location      = var.region
   force_destroy = true
-  
+
   uniform_bucket_level_access = true
 
   website {
@@ -19,23 +29,23 @@ resource "google_storage_bucket" "static_content" {
   }
 
   labels = {
-    purpose = "static-website"
+    purpose     = "static-website"
     environment = var.environment
   }
 }
 
 resource "google_storage_bucket_object" "static_site_index" {
-  name = "index.html"  # name in the bucket
-  source = "${path.module}/../../src/site/index.html"  # local path
-  bucket = google_storage_bucket.static_content.name
+  name       = "index.html"                               # name in the bucket
+  source     = "${path.module}/../../src/site/index.html" # local path
+  bucket     = google_storage_bucket.static_content.name
   depends_on = [google_storage_bucket_iam_member.public_rule]
 }
 
 
 resource "google_storage_bucket_object" "static_site_error" {
-  name = "error.html"  # name in the bucket
-  source = "${path.module}/../../src/site/error.html"  # local path
-  bucket = google_storage_bucket.static_content.name
+  name       = "error.html"                               # name in the bucket
+  source     = "${path.module}/../../src/site/error.html" # local path
+  bucket     = google_storage_bucket.static_content.name
   depends_on = [google_storage_bucket_iam_member.public_rule]
 }
 
@@ -52,15 +62,15 @@ resource "google_storage_bucket" "terraform_state" {
   name          = "${var.project}-terraform-state-${var.environment}"
   location      = var.region
   force_destroy = false
-  
+
   uniform_bucket_level_access = true
-  
+
   versioning {
     enabled = true
   }
 
   labels = {
-    purpose = "terraform-state"
+    purpose     = "terraform-state"
     environment = var.environment
   }
 }
@@ -70,11 +80,11 @@ resource "google_storage_bucket" "function_code" {
   name          = "${var.project}-function-code-${var.environment}"
   location      = var.region
   force_destroy = true
-  
+
   uniform_bucket_level_access = true
 
   labels = {
-    purpose = "function-code"
+    purpose     = "function-code"
     environment = var.environment
   }
 }

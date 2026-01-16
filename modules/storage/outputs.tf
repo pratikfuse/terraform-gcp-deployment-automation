@@ -26,8 +26,8 @@ output "terraform_state_bucket_url" {
 }
 
 output "terraform_static_site_url" {
-    description = "Static website url"
-    value = "${google_storage_bucket.static_content.website}"
+  description = "Static website url"
+  value       = google_storage_bucket.static_content.website
 }
 
 output "function_code_bucket" {

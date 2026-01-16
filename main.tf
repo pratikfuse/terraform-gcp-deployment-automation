@@ -9,21 +9,21 @@ terraform {
 }
 
 provider "google" {
-  project = var.project
-  region  = var.region
+  project     = var.project
+  region      = var.region
   credentials = file("C:\\Users\\locsupp\\AppData\\Roaming\\gcloud\\application_default_credentials.json")
 }
 
 # Networking Module
-# module "networking" {
-#   source  = "./modules/networking"
-#   project = var.project
-#   region  = var.region
-# }
+module "networking" {
+  source  = "./modules/networking"
+  project = var.project
+  region  = var.region
+}
 
 # IAM Module
 module "iam" {
-  source = "./modules/iam"
+  source  = "./modules/iam"
   project = var.project
 }
 
@@ -37,9 +37,16 @@ module "storage" {
 
 # Compute Module
 module "compute" {
-  source                = "./modules/compute"
-  project               = var.project
-  region                = var.region
-  zone                  = var.zone
-  function_code_bucket  = module.storage.function_code_bucket
+  source               = "./modules/compute"
+  project              = var.project
+  region               = var.region
+  zone                 = var.zone
+  function_code_bucket = module.storage.function_code_bucket
+  vpc_connector_id     = module.networking.serverless_connector_id
+
+  depends_on = [
+    module.networking,
+    module.storage,
+    module.iam
+  ]
 }

@@ -9,37 +9,42 @@ variable "region" {
 }
 
 variable "zone" {
-    type = string
-    description = "GCP zone for compute resource"
+  type        = string
+  description = "GCP zone for compute resource"
 }
 
 
 variable "source_bucket" {
-    default = "function_source_bucket"
+  default = "function_source_bucket"
 
 }
 
 variable "source_object" {
-    default = ""
+  default = ""
 }
 
 variable "service_account_email" {
-    default = ""
+  default = ""
 }
 
 
-variable function_name {
-    default = "cloud_function_hello_world"
+variable "function_name" {
+  default = "cloud_function_hello_world"
 }
 
-variable entry_point{
-    default = "hello_world"
+
+variable "entry_point" {
+  default = "hello_world"
 }
 
-variable runtime {
-    default = "python310"
+variable "runtime" {
+  default = "python310"
 }
 
-variable function_code_bucket {
-    description = "The bucket storage for function code"
+variable "function_code_bucket" {
+  description = "The bucket storage for function code"
+}
+
+variable "vpc_connector_id" {
+  description = "VPC Connector id for cloud function"
 }

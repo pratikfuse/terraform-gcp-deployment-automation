@@ -43,3 +43,16 @@ The fact that this does not require any user input through the GUI and can
 be managed entirely through a shell means its a good candidate to setup through a CI/CD pipeline
 
 The function is not being updated with the 
+
+
+
+### VPC setup
+
+VPC is used for network isolation to allow cloud function communicate privately, rather than over the public internet.
+The Firewall rules further restrict the traffic between services for improved security
+Using a VPC is the best practice in cloud native environments as it keeps data and communication within the cloud network and does not allow infiltration from outside the network
+
+
+First, the main vpc network is created using the `google_compute_network` resource type in terraform
+
+A subnetwork is subnet within the vpc, created to 
