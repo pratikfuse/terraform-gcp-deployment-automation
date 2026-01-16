@@ -13,9 +13,6 @@ variable "zone" {
     description = "GCP zone for compute resource"
 }
 
-variable "function_name" {
-  default = "rest_api_function"
-}
 
 variable "source_bucket" {
     default = "function_source_bucket"
@@ -28,4 +25,21 @@ variable "source_object" {
 
 variable "service_account_email" {
     default = ""
+}
+
+
+variable function_name {
+    default = "cloud_function_hello_world"
+}
+
+variable entry_point{
+    default = "hello_world"
+}
+
+variable runtime {
+    default = "python310"
+}
+
+variable function_code_bucket {
+    description = "The bucket storage for function code"
 }

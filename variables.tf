@@ -1,4 +1,4 @@
-variable "project" { 
+variable "project" {
   default = "cloud-computing-05"
 }
 

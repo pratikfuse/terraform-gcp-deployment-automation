@@ -24,3 +24,24 @@ output "terraform_state_bucket_url" {
   description = "Terraform state bucket URL"
   value       = "gs://${google_storage_bucket.terraform_state.name}"
 }
+
+output "terraform_static_site_url" {
+    description = "Static website url"
+    value = "${google_storage_bucket.static_content.website}"
+}
+
+output "function_code_bucket" {
+  description = "Cloud Function code bucket name"
+  value       = google_storage_bucket.function_code.name
+}
+
+output "function_code_bucket_url" {
+  description = "Cloud Function code bucket URL"
+  value       = "gs://${google_storage_bucket.function_code.name}"
+}
+
+
+output "static_website_url" {
+  description = "Static website public URL"
+  value       = "https://storage.googleapis.com/${google_storage_bucket.static_content.name}/index.html"
+}
