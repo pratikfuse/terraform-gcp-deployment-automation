@@ -6,6 +6,11 @@ terraform {
       version = "6.8.0"
     }
   }
+
+  backend "gcs" {
+    bucket = "cloud-computing-05-terraform-state-dev"
+    prefix = "terraform/state"
+  }
 }
 
 # apis to be enabled for the project
@@ -30,8 +35,9 @@ resource "google_project_service" "required_apis" {
 }
 
 provider "google" {
-  project = var.project
-  region  = var.region
+  project     = var.project
+  region      = var.region
+  credentials = file("C:\\Users\\locsupp\\AppData\\Roaming\\gcloud\\application_default_credentials.json")
 }
 
 # Networking Module

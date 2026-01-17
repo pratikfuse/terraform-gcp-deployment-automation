@@ -67,3 +67,34 @@ resource "google_compute_firewall" "allow_health_checks" {
 
   source_ranges = ["35.191.0.0/16", "130.211.0.0/22"]
 }
+
+
+# modules/storage/main.tf
+
+resource "google_storage_bucket" "terraform_state" {
+  name          = "${var.project}-terraform-stat-${var.project}"
+  location      = var.region
+  project       = var.project
+  force_destroy = false
+
+  uniform_bucket_level_access = true
+
+  versioning {
+    enabled = true # CRITICAL: Enable versioning for state recovery
+  }
+
+  lifecycle_rule {
+    action {
+      type = "Delete"
+    }
+    condition {
+      num_newer_versions         = 3 # Keep last 3 versions
+      days_since_noncurrent_time = 30
+    }
+  }
+
+  labels = {
+    purpose     = "terraform-state"
+    environment = var.environment
+  }
+}

@@ -31,6 +31,7 @@ resource "google_cloudfunctions2_function" "cloud_function" {
     available_memory   = "256M"
     timeout_seconds    = 60
 
+
     service_account_email = var.cloud_function_service_account_email
 
     vpc_connector                 = var.vpc_connector_id

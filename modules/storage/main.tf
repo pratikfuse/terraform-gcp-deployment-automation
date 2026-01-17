@@ -1,6 +1,6 @@
 resource "google_firestore_database" "default" {
   project         = var.project
-  name            = "hello-world-db"
+  name            = "firestore-db-1"
   location_id     = var.firestore_location
   type            = "FIRESTORE_NATIVE"
   deletion_policy = "ABANDON"
@@ -21,7 +21,7 @@ resource "google_firestore_database" "default" {
 resource "google_storage_bucket" "terraform_state" {
   name          = "${var.project}-terraform-state-${var.environment}"
   location      = var.region
-  force_destroy = false
+  force_destroy = true
 
   uniform_bucket_level_access = true
 

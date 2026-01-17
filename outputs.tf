@@ -18,7 +18,7 @@ output "frontend_url" {
   value       = module.compute.cloudrun_url
 }
 
-output "url" {
-  description = "Frontend url"
-  value       = module.compute.frontend_url
+output "terraform_state_bucket_name" {
+  description = "Name of the Terraform state bucket"
+  value       = module.storage.terraform_state_bucket
 }
