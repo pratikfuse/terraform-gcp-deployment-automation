@@ -48,3 +48,16 @@ variable "function_code_bucket" {
 variable "vpc_connector_id" {
   description = "VPC Connector id for cloud function"
 }
+
+variable "cloudrun_service_account_email" {
+  description = "Service account email for cloud run"
+}
+
+variable "cloud_function_service_account_email" {
+  description = "Service account email for cloud function"
+}
+
+
+variable "firestore_database_name" {
+  description = "Firestore database name"
+}

@@ -2,7 +2,7 @@
 
 output "firestore_database_id" {
   description = "Firestore database ID"
-  value       = google_firestore_database.default.name
+  value       = google_firestore_database.default.id
 }
 
 output "static_content_bucket" {
@@ -44,4 +44,10 @@ output "function_code_bucket_url" {
 output "static_website_url" {
   description = "Static website public URL"
   value       = "https://storage.googleapis.com/${google_storage_bucket.static_content.name}/index.html"
+}
+
+
+output "firestore_database_name" {
+  description = "Firebase database name"
+  value = google_firestore_database.default.name
 }
