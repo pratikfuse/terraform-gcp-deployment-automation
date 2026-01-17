@@ -40,13 +40,6 @@ output "function_code_bucket_url" {
   value       = "gs://${google_storage_bucket.function_code.name}"
 }
 
-
-# output "static_website_url" {
-#   description = "Static website public URL"
-#   value       = "https://storage.googleapis.com/${google_storage_bucket.static_content.name}/index.html"
-# }
-
-
 output "firestore_database_name" {
   description = "Firebase database name"
   value = google_firestore_database.default.name

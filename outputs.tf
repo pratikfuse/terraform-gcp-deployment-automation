@@ -8,11 +8,6 @@ output "vpc_network_name" {
   value       = module.networking.vpc_network
 }
 
-# output "function_service_account" {
-#   description = "Service account used by Cloud Function"
-#   value       = module.iam.function_service_account_email
-# }
-
 output "vpc_connector_name" {
   description = "Name of the VPC Access Connector"
   value       = module.networking.serverless_connector
@@ -20,5 +15,10 @@ output "vpc_connector_name" {
 
 output "frontend_url" {
   description = "Frontend url"
-  value = module.compute.artifact_registry_repository
+  value = module.compute.cloudrun_url
+}
+
+output "url" {
+  description = "Frontend url"
+  value = module.compute.frontend_url
 }
