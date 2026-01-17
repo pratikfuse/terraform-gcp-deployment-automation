@@ -4,55 +4,90 @@
 This is a demo project for maintaining and deploying *InfrastructureAsCode(IAC)* to Google Cloud Platform. 
 Terraform provides a standard way to build infrastructure by using declarative code.
 
+## Architecture Overview
+This project deploys a serverless web application on the Google Cloud Platform. It shows a greeting based on the name of the user and records the number of visits for each user to the site in a firestore database.
+This project is deployed using Terraform
+
+**Example:**
+- First Visit  : "Hello! John!.You have visited 1 times!"
+- Second Visit : "Hello! John!.You have visited 2 times!"
+
+### Architecture Components 
+1. **Frontend (Cloud Run)**
+- A static web page with a form where user enter their name and see the greeting message
+- HTML/CSS/Javascript asset being served through an NGINX Container
+
+2. **Backend API (Cloud Function)**
+- A Python(3.10) Cloud function that receives the request from the frontend service, fetches the count from firestore database, increments the count and updates in the database
+- Returns greeting message and visit count
+
+3. **Database (Firestore)**
+- Firestore database to store visit count records
+- *greetings* collection for each name
+
+4. **Object Storage**
+- Stores the function code zip file for deployment to Cloud Function
+- Terraform state bucket stores each state change from terraform
+
+5. **IAM Security**
+- Service accounts for cloud function and cloud run services
+- Operated with least privilege principle
+
+6. **VPC Networking**
+- VPC Network within GCP cluster
+- Serverless Connector
+- Firewall rules for network access control
+
+7. **Infrastructure as Code (IaC)**
+- Infrastructure defined using Terraform
+- Automated deployments
+- Version controlled
 
 
-The following resources as used in this project
-- Google Cloud Function
-- Firestore to host user count
+## Terraform Modules
+
+1. **Compute Module**
+- Cloud function deployment
+- Cloud run service deployment
+ 
+2. **Storage Modules**
+- Cloud store buckets
+- Firestore database management
+
+3. **IAM Module**
+- Service Account definitions
+- IAM Policies
+
+4. **Networking Module**
+- VPC Network
+- Serverless Connector
+- Firewall rules
 
 
+
+### **Request flow**
+1. User enters name in frontend form
+2. JavaScript makes HTTP GET request to Cloud Function URL
+3. Cloud Function receives request with `?name=John` parameter
+4. Function queries Firestore for existing count
+5. Function increments count or stores 1 for first time visit
+6. Function saves new count to Firestore
+7. Function returns JSON: `{"greeting": "Hello! John!", "count": 3}`
+8. Frontend displays greeting to the user
 
 ### Steps to IaC
-- Run `terraform init` to initialize the terraform project
-- Run `terraform fmt` to format and validate the terraform code
-
-
-### Using Modules in Terraform
-
-Modules help to group resources into different categories. In this sample, the following modules are used:
-- Compute
-- Networking 
-- Storage
-- Iam
-
-Each module can then be executed by itself using the module flag: `terraform apply -module="module_name"`
-
-The plan command comes in handy to check what gets executed before making the change to the infrastructure. 
-`terraform plan`
-
-Also, the `out` option can be provided to the plan function to save the output of the plan command into a file. This file can later be referenced by he `apply` command with the output file as a command
-Eg: `terraform apply output`
-
-
-
-### Insights
-All the resources need to be enabled first
-The plan command is a nice way to first visualize what is being created, so as to not have any surprises
-The python code is also hashed, and redeployed if changes are detected
-The fact that this does not require any user input through the GUI and can
-be managed entirely through a shell means its a good candidate to setup through a CI/CD pipeline
-
-The function is not being updated with the 
-
-
-
-### VPC setup
-
-VPC is used for network isolation to allow cloud function communicate privately, rather than over the public internet.
-The Firewall rules further restrict the traffic between services for improved security
-Using a VPC is the best practice in cloud native environments as it keeps data and communication within the cloud network and does not allow infiltration from outside the network
-
-
-First, the main vpc network is created using the `google_compute_network` resource type in terraform
-
-A subnetwork is subnet within the vpc, created to 
+1. **Initialize Terraform**
+```sh
+   terraform init
+```
+2. **Plan Infrastructure to output**
+```sh
+   terraform plan -out=output/plan
+```
+3. **Deploy Terraform**
+```sh
+   terraform apply output/plan 
+```
+4. **Access Application**
+ - Frontend Url: URL to access the frontend website `terraform output cloudrun_url`
+ - API Url: URL for the cloud function API `terraform output function_url`
