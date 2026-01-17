@@ -19,3 +19,9 @@ variable "connector_cidr" {
   default     = "10.8.0.0/28"
   description = "CIDR range for VPC Access Connector (Serverless)"
 }
+
+
+variable "environment" {
+  type        = string
+  description = "Environment name (dev, staging, prod)"
+}

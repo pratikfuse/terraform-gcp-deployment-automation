@@ -1,13 +1,14 @@
+
 resource "google_storage_bucket_object" "function_zip" {
-  name   = "hello_api.zip"
-  bucket = var.function_code_bucket
-  source = data.archive_file.function_source.output_path
-  # source_hash    = data.archive_file.function_source.output_base64sha256
+  name       = "hello_api.zip"
+  bucket     = var.function_code_bucket
+  source     = data.archive_file.function_source.output_path
   depends_on = [google_project_service.cloud_run]
 }
 
+# Cloud function resource block 
 resource "google_cloudfunctions2_function" "cloud_function" {
-  name     = var.function_name
+  name     = "${var.function_name}-${var.environment}"
   location = var.region
 
   labels = {
@@ -34,21 +35,23 @@ resource "google_cloudfunctions2_function" "cloud_function" {
 
     vpc_connector                 = var.vpc_connector_id
     vpc_connector_egress_settings = "PRIVATE_RANGES_ONLY"
+    ingress_settings = "ALLOW_ALL"
 
     environment_variables = {
       FIRESTORE_DATABASE = var.firestore_database_name
     }
   }
 
-  # Force redeploy when source code changes
   depends_on = [google_storage_bucket_object.function_zip]
 }
 
+# The hello_api directory is used to deploy the function
 data "archive_file" "function_source" {
   type        = "zip"
   source_dir  = "${path.module}/../../src/hello_api"
   output_path = "${path.module}/function_source.zip"
 
+  # remove unused files before bundling zip file
   excludes = [
     ".venv",
     "__pycache__",
@@ -66,9 +69,6 @@ resource "google_cloudfunctions2_function_iam_member" "invoker" {
   cloud_function = google_cloudfunctions2_function.cloud_function.name
   role           = "roles/cloudfunctions.invoker"
   member         = "allUsers"
-
-
-
 }
 
 
@@ -78,6 +78,7 @@ resource "google_project_service" "cloud_run" {
   disable_on_destroy = false
 }
 
+# builds frontend image using the tpl template file and Dockerfile containing an nginx service to serve the frontend
 resource "null_resource" "build_frontend_image" {
 
   triggers = {
@@ -87,7 +88,7 @@ resource "null_resource" "build_frontend_image" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      gcloud builds submit ${path.module}/../../src/site --tag=${var.region}-docker.pkg.dev/${var.project}/frontend-repo/frontend:latest --project=${var.project}
+      gcloud builds submit ${path.module}/../../src/site --tag=${var.region}-docker.pkg.dev/${var.project}/${google_artifact_registry_repository.frontend-repo.name}/frontend:latest --project=${var.project}
     EOT
   }
 
@@ -95,16 +96,17 @@ resource "null_resource" "build_frontend_image" {
 }
 
 
+# Cloud run service to host the frontend nginx service
 resource "google_artifact_registry_repository" "frontend-repo" {
   location      = var.region
-  repository_id = "frontend-repo"
+  repository_id = "frontend-repo-${var.environment}"
   description   = "Docker repo for frontend service"
   format        = "DOCKER"
 }
 
 
 resource "google_cloud_run_v2_service" "frontend" {
-  name                = "frontend"
+  name                = "frontend-${var.environment}"
   location            = var.region
   project             = var.project
   deletion_protection = false
@@ -112,7 +114,7 @@ resource "google_cloud_run_v2_service" "frontend" {
   template {
     service_account = var.service_account_email
     containers {
-      image = "${var.region}-docker.pkg.dev/${var.project}/frontend-repo/frontend:latest"
+      image = "${var.region}-docker.pkg.dev/${var.project}/${google_artifact_registry_repository.frontend-repo.name}/frontend:latest"
 
       ports {
         container_port = 8080
@@ -139,19 +141,19 @@ resource "google_cloud_run_v2_service" "frontend" {
       egress    = "PRIVATE_RANGES_ONLY"
     }
   }
+  ingress = "INGRESS_TRAFFIC_ALL"
   depends_on = [null_resource.build_frontend_image, local_file.frontend_html]
 }
 
 resource "google_cloud_run_v2_service_iam_member" "public_access" {
   project  = var.project
   location = var.region
-  name     = google_cloud_run_v2_service.frontend.name
-
-  role   = "roles/run.invoker"
-  member = "allUsers"
+  name     = "${google_cloud_run_v2_service.frontend.name}"
+  role     = "roles/run.invoker"
+  member   = "allUsers"
 }
 
-# Use templatefile to inject Function URL into HTML
+# use templatefile to build the tpl file with the cloud function url
 resource "local_file" "frontend_html" {
   content = templatefile("${path.module}/../../src/site/index.html.tpl", {
     CLOUD_FUNCTION_URL = google_cloudfunctions2_function.cloud_function.url

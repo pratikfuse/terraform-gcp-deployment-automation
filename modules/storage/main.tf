@@ -1,10 +1,11 @@
 resource "google_firestore_database" "default" {
   project         = var.project
-  name            = "(default)"
+  name            = "hello-world-db"
   location_id     = var.firestore_location
   type            = "FIRESTORE_NATIVE"
   deletion_policy = "ABANDON"
-
+  # destroy the database when terraform delete is calld
+  # The deletion needs a 5 minute grace period for the database can be created again
   lifecycle {
     prevent_destroy = false
     ignore_changes = [
@@ -14,47 +15,6 @@ resource "google_firestore_database" "default" {
     ]
   }
 }
-
-# Cloud Storage bucket for static website content
-# resource "google_storage_bucket" "static_content" {
-#   name          = "${var.project}-static-content-${var.environment}"
-#   location      = var.region
-#   force_destroy = true
-
-#   uniform_bucket_level_access = true
-
-#   website {
-#     main_page_suffix = "index.html"
-#     not_found_page   = "404.html"
-#   }
-
-#   labels = {
-#     purpose     = "static-website"
-#     environment = var.environment
-#   }
-# }
-
-# resource "google_storage_bucket_object" "static_site_index" {
-#   name       = "index.html"                               # name in the bucket
-#   source     = "${path.module}/../../src/site/index.html" # local path
-#   bucket     = google_storage_bucket.static_content.name
-#   depends_on = [google_storage_bucket_iam_member.public_rule]
-# }
-
-
-# resource "google_storage_bucket_object" "static_site_error" {
-#   name       = "error.html"                               # name in the bucket
-#   source     = "${path.module}/../../src/site/error.html" # local path
-#   bucket     = google_storage_bucket.static_content.name
-#   depends_on = [google_storage_bucket_iam_member.public_rule]
-# }
-
-# resource "google_storage_bucket_iam_member" "public_rule" {
-#   bucket = google_storage_bucket.static_content.name
-#   role   = "roles/storage.objectViewer"
-#   member = "allUsers"
-# }
-
 
 
 # Cloud Storage bucket for Terraform remote state

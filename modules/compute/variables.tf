@@ -61,3 +61,8 @@ variable "cloud_function_service_account_email" {
 variable "firestore_database_name" {
   description = "Firestore database name"
 }
+
+variable "environment" {
+  type        = string
+  description = "Environment name (dev, staging, prod)"
+}

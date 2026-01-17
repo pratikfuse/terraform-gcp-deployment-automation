@@ -94,3 +94,6 @@ learn-terraform-gcp/
 
 # Ignore transient lock info files created by terraform apply
 .terraform.tfstate.lock.info
+
+# ignore the index file from template
+./src/site/index.html
