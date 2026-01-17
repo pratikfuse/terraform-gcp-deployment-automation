@@ -31,7 +31,6 @@ resource "google_project_service" "required_apis" {
 provider "google" {
   project     = var.project
   region      = var.region
-  credentials = file("C:\\Users\\locsupp\\AppData\\Roaming\\gcloud\\application_default_credentials.json")
 }
 
 # Networking Module
