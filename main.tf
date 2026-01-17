@@ -16,7 +16,8 @@ locals {
     "run.googleapis.com",
     "artifactregistry.googleapis.com",
     "firestore.googleapis.com",
-    "vpcaccess.googleapis.com"
+    "vpcaccess.googleapis.com",
+    "compute.googleapis.com"
   ]
 }
 
