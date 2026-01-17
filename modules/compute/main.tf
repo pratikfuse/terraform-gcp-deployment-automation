@@ -82,18 +82,16 @@ resource "null_resource" "build_frontend_image" {
 
   triggers = {
     dockerfile_hash = filemd5("${path.module}/../../src/site/Dockerfile")
-    html_hash       = filemd5("${path.module}/../../src/site/index.html")
+    html_hash       = filemd5("${path.module}/../../src/site/index.html.tpl")
   }
 
   provisioner "local-exec" {
     command = <<-EOT
-      gcloud builds submit ${path.module}/../../src/frontend \
-        --tag=${var.region}-docker.pkg.dev/${var.project}/cloud-run-repo/frontend:latest \
-        --project=${var.project}
+      gcloud builds submit ${path.module}/../../src/site --tag=${var.region}-docker.pkg.dev/${var.project}/frontend-repo/frontend:latest --project=${var.project}
     EOT
   }
 
-  depends_on = [  ]
+  depends_on = [ google_artifact_registry_repository.frontend-repo, local_file.frontend_html ]
 }
 
 
@@ -106,9 +104,10 @@ resource "google_artifact_registry_repository" "frontend-repo" {
 
 
 resource "google_cloud_run_v2_service" "frontend" {
-  name = "frontend-service"
+  name = "frontend"
   location = var.region
   project = var.project
+  deletion_protection = false
 
   template {
     service_account = var.service_account_email
@@ -120,7 +119,7 @@ resource "google_cloud_run_v2_service" "frontend" {
       }
 
       env {
-        name = "FUNCTION_URL"
+        name = "CLOUD_FUNCTION_URL"
         value = google_cloudfunctions2_function.cloud_function.url 
       }
 
@@ -137,10 +136,30 @@ resource "google_cloud_run_v2_service" "frontend" {
     }
     vpc_access {
       connector = var.vpc_connector_id
-      egress = "PRIVATE_RANGE_ONLY"
+      egress = "PRIVATE_RANGES_ONLY"
     }
   }
-  depends_on = [ null_resource.build_frontend_image ]
+  depends_on = [ null_resource.build_frontend_image, local_file.frontend_html ]
+}
+
+resource "google_cloud_run_v2_service_iam_member" "public_access" {
+  project = var.project
+  location = var.region
+  name = google_cloud_run_v2_service.frontend.name
+
+  role = "roles/run.invoker"
+  member = "allUsers"
+}
+
+# Use templatefile to inject Function URL into HTML
+resource "local_file" "frontend_html" {
+  content = templatefile("${path.module}/../../src/site/index.html.tpl", {
+    CLOUD_FUNCTION_URL = google_cloudfunctions2_function.cloud_function.url
+  })
+
+  filename = "${path.module}/../../src/site/index.html"
+
+  depends_on = [google_cloudfunctions2_function.cloud_function]
 }
 
 # VPC configurations for cloud functions

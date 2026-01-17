@@ -232,6 +232,7 @@
 
     <script>
         async function greetUser() {
+            const url = '${CLOUD_FUNCTION_URL}';
             const nameInput = document.getElementById('nameInput');
             const name = nameInput.value.trim();
             
@@ -240,7 +241,7 @@
                 return;
             }
 
-            const response = await fetch(`https://us-central1-cloud-computing-05.cloudfunctions.net/cloud_function_hello_world?name=${name}`);
+            const response = await fetch(url+'?name='+name);
             const {
                 greeting,
                 count
@@ -249,8 +250,8 @@
             const greetingElem = document.getElementById('greeting');
             const welcomeMessage = document.getElementById('welcomeMessage');
             
-            greetingElem.textContent = `Hello, ${name}!`;
-            welcomeMessage.innerHTML = `<span class="emoji">🎉</span> ${greeting}$ <strong>You have visited ${count} times</strong>!`;
+            greetingElem.textContent = 'Hello, ' + name + '!';
+            welcomeMessage.innerHTML = '<span class="emoji">🎉</span>'+ greeting +'<strong>.You have visited ' + count + ' times</strong>!';
             welcomeMessage.classList.add('active');
             
             nameInput.value = '';

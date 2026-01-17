@@ -90,3 +90,7 @@ output/
 learn-terraform-gcp/
 .terraform.tfstate*
 *.tfplan
+
+
+# Ignore transient lock info files created by terraform apply
+.terraform.tfstate.lock.info

@@ -6,7 +6,7 @@ resource "google_firestore_database" "default" {
   deletion_policy = "ABANDON"
 
   lifecycle {
-    prevent_destroy = true
+    prevent_destroy = false
     ignore_changes = [ 
         name,
         location_id,
@@ -16,44 +16,44 @@ resource "google_firestore_database" "default" {
 }
 
 # Cloud Storage bucket for static website content
-resource "google_storage_bucket" "static_content" {
-  name          = "${var.project}-static-content-${var.environment}"
-  location      = var.region
-  force_destroy = true
+# resource "google_storage_bucket" "static_content" {
+#   name          = "${var.project}-static-content-${var.environment}"
+#   location      = var.region
+#   force_destroy = true
 
-  uniform_bucket_level_access = true
+#   uniform_bucket_level_access = true
 
-  website {
-    main_page_suffix = "index.html"
-    not_found_page   = "404.html"
-  }
+#   website {
+#     main_page_suffix = "index.html"
+#     not_found_page   = "404.html"
+#   }
 
-  labels = {
-    purpose     = "static-website"
-    environment = var.environment
-  }
-}
+#   labels = {
+#     purpose     = "static-website"
+#     environment = var.environment
+#   }
+# }
 
-resource "google_storage_bucket_object" "static_site_index" {
-  name       = "index.html"                               # name in the bucket
-  source     = "${path.module}/../../src/site/index.html" # local path
-  bucket     = google_storage_bucket.static_content.name
-  depends_on = [google_storage_bucket_iam_member.public_rule]
-}
+# resource "google_storage_bucket_object" "static_site_index" {
+#   name       = "index.html"                               # name in the bucket
+#   source     = "${path.module}/../../src/site/index.html" # local path
+#   bucket     = google_storage_bucket.static_content.name
+#   depends_on = [google_storage_bucket_iam_member.public_rule]
+# }
 
 
-resource "google_storage_bucket_object" "static_site_error" {
-  name       = "error.html"                               # name in the bucket
-  source     = "${path.module}/../../src/site/error.html" # local path
-  bucket     = google_storage_bucket.static_content.name
-  depends_on = [google_storage_bucket_iam_member.public_rule]
-}
+# resource "google_storage_bucket_object" "static_site_error" {
+#   name       = "error.html"                               # name in the bucket
+#   source     = "${path.module}/../../src/site/error.html" # local path
+#   bucket     = google_storage_bucket.static_content.name
+#   depends_on = [google_storage_bucket_iam_member.public_rule]
+# }
 
-resource "google_storage_bucket_iam_member" "public_rule" {
-  bucket = google_storage_bucket.static_content.name
-  role   = "roles/storage.objectViewer"
-  member = "allUsers"
-}
+# resource "google_storage_bucket_iam_member" "public_rule" {
+#   bucket = google_storage_bucket.static_content.name
+#   role   = "roles/storage.objectViewer"
+#   member = "allUsers"
+# }
 
 
 

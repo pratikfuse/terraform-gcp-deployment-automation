@@ -17,3 +17,8 @@ output "vpc_connector_name" {
   description = "Name of the VPC Access Connector"
   value       = module.networking.serverless_connector
 }
+
+output "frontend_url" {
+  description = "Frontend url"
+  value = module.compute.artifact_registry_repository
+}

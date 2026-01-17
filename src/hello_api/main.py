@@ -1,8 +1,11 @@
 from functions_framework import http
 from google.cloud import firestore
 from flask import jsonify
+import os
 
-db = firestore.Client()
+FIRESTORE_DATABASE = os.getenv("FIRESTORE_DATABASE")
+
+db = firestore.Client(database=FIRESTORE_DATABASE)
 
 
 @http

@@ -2,14 +2,14 @@
 # IAM Module - Service Accounts and IAM Bindings
 
 resource "google_service_account" "cloud_function_sa" {
-    account_id = "${var.project}-cloud-function-sa"
+    account_id = "${var.project}-function-sa"
     display_name = "Cloud Function Service Account"
     project = var.project
     description = "Service account for Cloud function"
 }
 
 resource "google_service_account" "cloud_run_sa" {
-    account_id = "${var.project}-cloud-function-sa"
+    account_id = "${var.project}-run-sa"
     display_name = "Cloud Run Service Account"
     project = var.project
     description = "Service account for Cloud Run"
