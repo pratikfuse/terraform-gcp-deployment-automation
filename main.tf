@@ -14,15 +14,15 @@ locals {
     "cloudbuild.googleapis.com",
     "run.googleapis.com",
     "artifactregistry.googleapis.com",
-    "firestore.googleapis.com" 
+    "firestore.googleapis.com"
   ]
 }
 
-resource google_project_service "required_apis" {
+resource "google_project_service" "required_apis" {
   for_each = toset(local.required_apis)
 
-  project = var.project
-  service = each.value
+  project            = var.project
+  service            = each.value
   disable_on_destroy = false
 }
 
@@ -34,17 +34,17 @@ provider "google" {
 
 # Networking Module
 module "networking" {
-  source  = "./modules/networking"
-  project = var.project
-  region  = var.region
-  depends_on = [ local.required_apis ]
+  source     = "./modules/networking"
+  project    = var.project
+  region     = var.region
+  depends_on = [local.required_apis]
 }
 
 # IAM Module
 module "iam" {
-  source  = "./modules/iam"
-  project = var.project
-  depends_on = [ local.required_apis ]
+  source     = "./modules/iam"
+  project    = var.project
+  depends_on = [local.required_apis]
 }
 
 # Storage Module
@@ -53,21 +53,21 @@ module "storage" {
   project     = var.project
   region      = var.region
   environment = var.environment
-  depends_on = [ local.required_apis ]
+  depends_on  = [local.required_apis]
 }
 
 # Compute Module
 module "compute" {
-  source               = "./modules/compute"
-  project              = var.project
-  region               = var.region
-  zone                 = var.zone
-  function_code_bucket = module.storage.function_code_bucket
-  vpc_connector_id     = module.networking.serverless_connector_id
-  firestore_database_name = module.storage.firestore_database_name
-  cloudrun_service_account_email = module.iam.cloudrun_service_account_email
+  source                               = "./modules/compute"
+  project                              = var.project
+  region                               = var.region
+  zone                                 = var.zone
+  function_code_bucket                 = module.storage.function_code_bucket
+  vpc_connector_id                     = module.networking.serverless_connector_id
+  firestore_database_name              = module.storage.firestore_database_name
+  cloudrun_service_account_email       = module.iam.cloudrun_service_account_email
   cloud_function_service_account_email = module.iam.cloud_function_service_account_email
-   
+
   depends_on = [
     module.networking,
     module.storage,

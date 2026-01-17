@@ -2,8 +2,8 @@
 
 
 output "function_url" {
-    description = "URL fo the deployed cloud function"
-    value = google_cloudfunctions2_function.cloud_function.url
+  description = "URL fo the deployed cloud function"
+  value       = google_cloudfunctions2_function.cloud_function.url
 }
 
 output "cloudrun_url" {
@@ -18,5 +18,5 @@ output "artifact_registry_repository" {
 
 output "frontend_url" {
   description = "Frontend Url"
-  value = google_cloud_run_v2_service.frontend.uri
+  value       = google_cloud_run_v2_service.frontend.uri
 }

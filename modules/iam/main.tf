@@ -2,24 +2,24 @@
 # IAM Module - Service Accounts and IAM Bindings
 
 resource "google_service_account" "cloud_function_sa" {
-    account_id = "${var.project}-function-sa"
-    display_name = "Cloud Function Service Account"
-    project = var.project
-    description = "Service account for Cloud function"
+  account_id   = "${var.project}-function-sa"
+  display_name = "Cloud Function Service Account"
+  project      = var.project
+  description  = "Service account for Cloud function"
 }
 
 resource "google_service_account" "cloud_run_sa" {
-    account_id = "${var.project}-run-sa"
-    display_name = "Cloud Run Service Account"
-    project = var.project
-    description = "Service account for Cloud Run"
+  account_id   = "${var.project}-run-sa"
+  display_name = "Cloud Run Service Account"
+  project      = var.project
+  description  = "Service account for Cloud Run"
 }
 
 resource "google_project_iam_member" "function_firestore_user" {
-    project = var.project
-    role = "roles/datastore.user"
-    member = "serviceAccount:${google_service_account.cloud_function_sa.email}"
-    depends_on = [ google_service_account.cloud_function_sa ]
+  project    = var.project
+  role       = "roles/datastore.user"
+  member     = "serviceAccount:${google_service_account.cloud_function_sa.email}"
+  depends_on = [google_service_account.cloud_function_sa]
 }
 
 

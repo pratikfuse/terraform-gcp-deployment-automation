@@ -1,17 +1,17 @@
 resource "google_firestore_database" "default" {
-  project     = var.project
-  name        = "(default)"
-  location_id = var.firestore_location
-  type        = "FIRESTORE_NATIVE"
+  project         = var.project
+  name            = "(default)"
+  location_id     = var.firestore_location
+  type            = "FIRESTORE_NATIVE"
   deletion_policy = "ABANDON"
 
   lifecycle {
     prevent_destroy = false
-    ignore_changes = [ 
-        name,
-        location_id,
-        type
-     ]
+    ignore_changes = [
+      name,
+      location_id,
+      type
+    ]
   }
 }
 

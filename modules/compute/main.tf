@@ -91,22 +91,22 @@ resource "null_resource" "build_frontend_image" {
     EOT
   }
 
-  depends_on = [ google_artifact_registry_repository.frontend-repo, local_file.frontend_html ]
+  depends_on = [google_artifact_registry_repository.frontend-repo, local_file.frontend_html]
 }
 
 
 resource "google_artifact_registry_repository" "frontend-repo" {
-  location = var.region
+  location      = var.region
   repository_id = "frontend-repo"
-  description = "Docker repo for frontend service"
-  format = "DOCKER"
+  description   = "Docker repo for frontend service"
+  format        = "DOCKER"
 }
 
 
 resource "google_cloud_run_v2_service" "frontend" {
-  name = "frontend"
-  location = var.region
-  project = var.project
+  name                = "frontend"
+  location            = var.region
+  project             = var.project
   deletion_protection = false
 
   template {
@@ -119,13 +119,13 @@ resource "google_cloud_run_v2_service" "frontend" {
       }
 
       env {
-        name = "CLOUD_FUNCTION_URL"
-        value = google_cloudfunctions2_function.cloud_function.url 
+        name  = "CLOUD_FUNCTION_URL"
+        value = google_cloudfunctions2_function.cloud_function.url
       }
 
       resources {
         limits = {
-          cpu = "1"
+          cpu    = "1"
           memory = "512Mi"
         }
       }
@@ -136,18 +136,18 @@ resource "google_cloud_run_v2_service" "frontend" {
     }
     vpc_access {
       connector = var.vpc_connector_id
-      egress = "PRIVATE_RANGES_ONLY"
+      egress    = "PRIVATE_RANGES_ONLY"
     }
   }
-  depends_on = [ null_resource.build_frontend_image, local_file.frontend_html ]
+  depends_on = [null_resource.build_frontend_image, local_file.frontend_html]
 }
 
 resource "google_cloud_run_v2_service_iam_member" "public_access" {
-  project = var.project
+  project  = var.project
   location = var.region
-  name = google_cloud_run_v2_service.frontend.name
+  name     = google_cloud_run_v2_service.frontend.name
 
-  role = "roles/run.invoker"
+  role   = "roles/run.invoker"
   member = "allUsers"
 }
 
@@ -161,5 +161,3 @@ resource "local_file" "frontend_html" {
 
   depends_on = [google_cloudfunctions2_function.cloud_function]
 }
-
-# VPC configurations for cloud functions

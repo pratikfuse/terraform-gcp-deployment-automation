@@ -15,10 +15,10 @@ output "vpc_connector_name" {
 
 output "frontend_url" {
   description = "Frontend url"
-  value = module.compute.cloudrun_url
+  value       = module.compute.cloudrun_url
 }
 
 output "url" {
   description = "Frontend url"
-  value = module.compute.frontend_url
+  value       = module.compute.frontend_url
 }
