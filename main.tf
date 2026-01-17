@@ -30,16 +30,16 @@ resource "google_project_service" "required_apis" {
 }
 
 provider "google" {
-  project     = var.project
-  region      = var.region
+  project = var.project
+  region  = var.region
 }
 
 # Networking Module
 module "networking" {
-  source     = "./modules/networking"
-  project    = var.project
-  region     = var.region
-  depends_on = [local.required_apis]
+  source      = "./modules/networking"
+  project     = var.project
+  region      = var.region
+  depends_on  = [local.required_apis]
   environment = var.environment
 }
 

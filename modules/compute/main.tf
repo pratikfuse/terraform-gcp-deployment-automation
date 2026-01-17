@@ -35,7 +35,7 @@ resource "google_cloudfunctions2_function" "cloud_function" {
 
     vpc_connector                 = var.vpc_connector_id
     vpc_connector_egress_settings = "PRIVATE_RANGES_ONLY"
-    ingress_settings = "ALLOW_ALL"
+    ingress_settings              = "ALLOW_ALL"
 
     environment_variables = {
       FIRESTORE_DATABASE = var.firestore_database_name
@@ -141,14 +141,14 @@ resource "google_cloud_run_v2_service" "frontend" {
       egress    = "PRIVATE_RANGES_ONLY"
     }
   }
-  ingress = "INGRESS_TRAFFIC_ALL"
+  ingress    = "INGRESS_TRAFFIC_ALL"
   depends_on = [null_resource.build_frontend_image, local_file.frontend_html]
 }
 
 resource "google_cloud_run_v2_service_iam_member" "public_access" {
   project  = var.project
   location = var.region
-  name     = "${google_cloud_run_v2_service.frontend.name}"
+  name     = google_cloud_run_v2_service.frontend.name
   role     = "roles/run.invoker"
   member   = "allUsers"
 }
